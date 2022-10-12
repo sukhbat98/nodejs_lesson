@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const MyError = require("../utils/myError")
 
 exports.getCategories = async(req, res, next) => {
 
@@ -19,10 +20,7 @@ exports.getCategory = async(req, res, next) => {
         const categories = await Category.findById(req.params.id);
 
         if (!categories) {
-            return res.status(400).json({
-                success: false,
-                error: req.params.id + " ID-тэй категори байхгүй.",
-            })
+            throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
         }
 
         res.status(200).json({
@@ -56,10 +54,7 @@ exports.updateCategory = async(req, res, next) => {
         });
 
         if (!categories) {
-            return res.status(400).json({
-                success: false,
-                error: req.params.id + " ID-тэй категори байхгүй.",
-            })
+            throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
         }
 
         res.status(200).json({
@@ -83,13 +78,10 @@ exports.deleteCategory = async(req, res, next) => {
         const categories = await Category.findByIdAndDelete(req.params.id);
 
         if (!categories) {
-            return res.status(400).json({
-                success: false,
-                error: req.params.id + " ID-тэй категори байхгүй.",
-            })
+            throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             data: categories,
         });
