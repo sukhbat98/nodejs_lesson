@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { transliterate, slugify } = require("transliteration")
 
 const CategoryShema = new mongoose.Schema({
     name: {
@@ -8,6 +9,7 @@ const CategoryShema = new mongoose.Schema({
         trim: true,
         maxlength: [50, "Категорийн нэрний урт дээд тал нь 50 тэмдэгт байх ёстой."],
     },
+    slug: String,
     description: {
         type: String,
         required: [true, "Категорийн тайлбарийг заавал оруулах ёстой."],
@@ -27,6 +29,12 @@ const CategoryShema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+});
+
+CategoryShema.pre('save', function(next) {
+    // Нэр хөрвүүлэх
+    this.slug = slugify(this.name);
+    next();
 });
 
 module.exports = mongoose.model("Category", CategoryShema);

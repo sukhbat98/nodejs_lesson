@@ -19,6 +19,7 @@
     "express-async-handler": "^1.2.0",
     "mongoose": "^6.6.5",
     "morgan": "^1.10.0",
-    "rotating-file-stream": "^3.0.4"
+    "rotating-file-stream": "^3.0.4",
+    "transliteration": "^2.3.5"
   }
 }
