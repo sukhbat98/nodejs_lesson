@@ -34,6 +34,8 @@ const CategoryShema = new mongoose.Schema({
 CategoryShema.pre('save', function(next) {
     // Нэр хөрвүүлэх
     this.slug = slugify(this.name);
+    this.averageRating = Math.floor(Math.random() * 10) + 1;
+    this.averagePrice = Math.floor(Math.random() * 100000) + 3000;
     next();
 });
 
