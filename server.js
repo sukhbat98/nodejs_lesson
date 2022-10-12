@@ -16,6 +16,7 @@ const categoriesRoutes = require("./routes/categories");
 
 // middleware оруулж ирэх
 const logger = require("./middleware/logger");
+const errorHandler = require("./middleware/error")
 
 const connectDB = require("./config/db");
 
@@ -40,6 +41,7 @@ app.use(logger)
 app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use("/api/v1/categories/", categoriesRoutes)
+app.use(errorHandler);
 
 const server = app.listen(
     process.env.PORT,
