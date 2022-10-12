@@ -8,16 +8,36 @@ const MyError = require("../utils/myError")
 
 exports.getCategories = asyncHandler(async(req, res, next) => {
 
+    // queries
     const select = req.query.select;
-    delete req.query.select;
-
     const sort = req.query.sort
-    delete req.query.sort;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
 
-    const categories = await Category.find(req.query, select).sort(sort);
+    ["select", "sort", "page", "limit"].forEach( el => delete req.query[el]);
+
+    // Pagenation
+    const total = await Category.countDocuments();
+    const pageCount = Math.ceil(total / limit);
+    const start = (page - 1) * limit + 1;
+    let end = start + limit - 1;
+
+    if (end > total) end = total;
+
+    const pagenation = { total, pageCount, start, end, limit };
+
+    if (page < pageCount) pagenation.nextPage = page + 1;
+    if (page > 1) pagenation.prevPage = page - 1;
+
+    const categories = await Category.find(req.query, select)
+        .sort(sort)
+        .skip(start - 1)
+        .limit(limit);
+
     res.status(200).json({
         success: true,
         data: categories,
+        pagenation,
     })
 
 });
