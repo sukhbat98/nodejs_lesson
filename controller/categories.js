@@ -8,7 +8,13 @@ const MyError = require("../utils/myError")
 
 exports.getCategories = asyncHandler(async(req, res, next) => {
 
-    const categories = await Category.find(req.query);
+    const select = req.query.select;
+    delete req.query.select;
+
+    const sort = req.query.sort
+    delete req.query.sort;
+
+    const categories = await Category.find(req.query, select).sort(sort);
     res.status(200).json({
         success: true,
         data: categories,
