@@ -52,6 +52,14 @@ const BookShema = new mongoose.Schema({
         required: true,
     },
 
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+BookShema.virtual("zohiogch").get(function() {
+    let tokens = this.author.split(' ')
+    if (tokens.length === 1) tokens = this.author.split('.');
+    if (tokens.length === 2) return tokens[1];
+
+    return tokens[0];
+})
 
 module.exports = mongoose.model("Book", BookShema);

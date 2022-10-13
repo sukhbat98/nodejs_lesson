@@ -13,6 +13,7 @@ const colors = require("colors");
 
 // Router оруулж ирэх
 const categoriesRoutes = require("./routes/categories");
+const booksRoutes = require("./routes/books");
 
 // middleware оруулж ирэх
 const logger = require("./middleware/logger");
@@ -41,6 +42,7 @@ app.use(logger)
 app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use("/api/v1/categories/", categoriesRoutes)
+app.use("/api/v1/books/", booksRoutes)
 app.use(errorHandler);
 
 const server = app.listen(

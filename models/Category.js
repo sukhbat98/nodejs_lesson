@@ -29,7 +29,14 @@ const CategoryShema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+CategoryShema.virtual("books", {
+    ref: "Book",
+    localField: "_id",
+    foreignField: "category",
+    justOne: false,
+})
 
 CategoryShema.pre('save', function(next) {
     // Нэр хөрвүүлэх
