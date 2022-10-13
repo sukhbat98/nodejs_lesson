@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 
 // models
 const Category = require("./models/Category");
+const Book = require("./models/Book");
 
 // configs
 dotenv.config({ path: "./config/config.env" });
@@ -14,11 +15,13 @@ dotenv.config({ path: "./config/config.env" });
 mongoose.connect(process.env.MONGODB_URI)
 
 const categories = JSON.parse(fs.readFileSync(__dirname + '/data/categories.js', "utf-8"));
+const books = JSON.parse(fs.readFileSync(__dirname + '/data/books.js', "utf-8"));
 
 const importData = async () => {
     try {
         await Category.create(categories);
-        console.log("Категорийн өгөгдлүүдийг орууллаа...".green.inverse);
+        await Book.create(books);
+        console.log("Өгөгдлүүдийг орууллаа...".green.inverse);
     } catch (err) {
         console.log(err);
     }
@@ -27,7 +30,8 @@ const importData = async () => {
 const deleteData = async () => {
     try {
         await Category.deleteMany();
-        console.log("Категорийн өгөгдлүүдийг устгалаа...".red.inverse);
+        await Book.deleteMany();
+        console.log("Өгөгдлүүдийг устгалаа...".red.inverse);
     } catch (err) {
         console.log(err);
     }
