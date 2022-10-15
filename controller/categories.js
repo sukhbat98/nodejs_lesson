@@ -47,7 +47,7 @@ exports.getCategory = asyncHandler(async(req, res, next) => {
     const categories = await Category.findById(req.params.id).populate("books");
 
     if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
+        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
     }
 
     res.status(200).json({
@@ -75,7 +75,7 @@ exports.updateCategory = asyncHandler(async(req, res, next) => {
     });
 
     if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
+        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
     }
 
     res.status(200).json({
@@ -90,7 +90,7 @@ exports.deleteCategory = asyncHandler(async(req, res, next) => {
     const categories = await Category.findById(req.params.id);
 
     if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 400);
+        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
     }
 
     categories.remove();
