@@ -46,4 +46,10 @@ CategoryShema.pre('save', function(next) {
     next();
 });
 
+CategoryShema.pre('remove', async function(next) {
+    //  Category устгах үед хамааралтай номнуудыг устгах middleware
+    await this.model("Book").deleteMany({ category: this._id })
+    next();
+});
+
 module.exports = mongoose.model("Category", CategoryShema);
