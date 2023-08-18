@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 
 // models
 const Category = require("../models/Category");
+const Book = require("../models/Book")
 
 // custom error
 const MyError = require("../utils/myError")
@@ -93,11 +94,18 @@ exports.deleteCategory = asyncHandler(async(req, res, next) => {
         throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
     }
 
-    categories.remove();
+    try {
+        // Delete related child documents
+        await Book.deleteMany({ category: categories._id });
+        await Category.deleteOne({ _id: req.params.id })
+    }
+    catch (err) {
+        throw new MyError(String(err));
+    }
 
     res.status(200).json({
         success: true,
-        data: categories,
+        msg: "Амжилттай устлаа",
     });
 
 });
