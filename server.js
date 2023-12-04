@@ -6,10 +6,14 @@ const rfs = require('rotating-file-stream');
 
 // Аппын тохиргоог process.env руу ачаалах
 const dotenv = require("dotenv")
-dotenv.config({ path: "./config/config.env" });
 
 // colors
 const colors = require("colors");
+
+// file-upload
+const fileupload = require("express-fileupload");
+
+dotenv.config({ path: "./config/config.env" });
 
 // Router оруулж ирэх
 const categoriesRoutes = require("./routes/categories");
@@ -25,9 +29,9 @@ connectDB()
 
 // create a rotating write stream
 var accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    path: path.join(__dirname, 'log')
-  })
+  interval: '1d', // rotate daily
+  path: path.join(__dirname, 'log')
+})
 
 // start app
 const app = express();
@@ -36,7 +40,10 @@ const app = express();
 app.use(express.json());
 
 // middlewares
-app.use(logger)
+app.use(logger);
+
+// file upload
+app.use(fileupload());
 
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }))
@@ -46,14 +53,14 @@ app.use("/api/v1/books/", booksRoutes)
 app.use(errorHandler);
 
 const server = app.listen(
-    process.env.PORT,
-    console.log(`Express сервер ${process.env.PORT} порт дээр аслаа...`.rainbow.bold)
+  process.env.PORT,
+  console.log(`Express сервер ${process.env.PORT} порт дээр аслаа...`.rainbow.bold)
 )
 
 // Сервер дээр алдаа гарсан үед ажиллана.
 process.on("unhandledRejection", (err, promise) => {
-    console.log(`Сервер дээр алдаа гарлаа: ${err.message}`.red.underline.bold);
-    server.close(() => {
-        process.exit(1);
-    });
+  console.log(`Сервер дээр алдаа гарлаа: ${err.message}`.red.underline.bold);
+  server.close(() => {
+    process.exit(1);
+  });
 })
