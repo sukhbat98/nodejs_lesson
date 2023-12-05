@@ -1,6 +1,6 @@
 const express = require("express");
 
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 
 const {
   getBooks,
@@ -9,7 +9,7 @@ const {
   updateBook,
   deleteBook,
   uploadBookPhoto
-} = require("./../controller/books")
+} = require("../controller/books")
 
 // ** api/v1/books
 router.route("/")
