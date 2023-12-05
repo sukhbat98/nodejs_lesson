@@ -18,6 +18,7 @@ dotenv.config({ path: "./config/config.env" });
 // Router оруулж ирэх
 const categoriesRoutes = require("./routes/categories");
 const booksRoutes = require("./routes/books");
+const usersRoutes = require("./routes/users");
 
 // middleware оруулж ирэх
 const logger = require("./middleware/logger");
@@ -50,6 +51,7 @@ app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use("/api/v1/categories/", categoriesRoutes)
 app.use("/api/v1/books/", booksRoutes)
+app.use("/api/v1/users/", usersRoutes)
 app.use(errorHandler);
 
 const server = app.listen(
