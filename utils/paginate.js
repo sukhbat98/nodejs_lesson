@@ -1,5 +1,5 @@
+/** My pagination function */
 module.exports = async function (model, page, limit) {
-  // Pagenation
   const total = await model.countDocuments();
   const pageCount = Math.ceil(total / limit);
   const start = (page - 1) * limit + 1;

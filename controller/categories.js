@@ -4,9 +4,10 @@ const asyncHandler = require('express-async-handler')
 const Category = require("../models/Category");
 const Book = require("../models/Book");
 
+// my paginate
 const paginate = require("../utils/paginate");
 
-// custom error
+// my custom error
 const MyError = require("../utils/myError")
 
 exports.getCategories = asyncHandler(async (req, res, next) => {

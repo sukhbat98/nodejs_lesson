@@ -5,43 +5,40 @@ const path = require("path");
 const Book = require("../models/Book");
 const Category = require("../models/Category");
 
-// custom error
-const MyError = require("../utils/myError")
+// my custom error
+const MyError = require("../utils/myError");
+
+// my paginate
+const paginate = require("../utils/paginate");
 
 // api/v1/books
 exports.getBooks = asyncHandler(async (req, res, next) => {
 
-  // // queries
+  // queries
   const select = req.query.select;
   const sort = req.query.sort
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 100;
+  const limit = parseInt(req.query.limit) || 10;
 
   ["select", "sort", "page", "limit"].forEach(el => delete req.query[el]);
 
   // Pagenation
-  const total = await Book.countDocuments();
-  const pageCount = Math.ceil(total / limit);
-  const start = (page - 1) * limit + 1;
-  let end = start + limit - 1;
+  const pagination = await paginate(Book, page, limit)
 
-  if (end > total) end = total;
-
-  const pagenation = { total, pageCount, start, end, limit };
-
-  if (page < pageCount) pagenation.nextPage = page + 1;
-  if (page > 1) pagenation.prevPage = page - 1;
-
-  const books = await Book.find().populate({
-    path: "category",
-    select: "name averagePrice",
-  });
+  const books = await Book.find(req.query, select)
+    .populate({
+      path: "category",
+      select: "name averagePrice",
+    })
+    .sort(sort)
+    .skip(pagination.start - 1)
+    .limit(limit);
 
   res.status(200).json({
     success: true,
     count: books.length,
     data: books,
-    pagenation,
+    pagination,
   })
 
 });
@@ -58,25 +55,18 @@ exports.getCategoryBooks = asyncHandler(async (req, res, next) => {
   ["select", "sort", "page", "limit"].forEach(el => delete req.query[el]);
 
   // Pagenation
-  const total = await Book.countDocuments();
-  const pageCount = Math.ceil(total / limit);
-  const start = (page - 1) * limit + 1;
-  let end = start + limit - 1;
+  const pagination = await paginate(Book, page, limit)
 
-  if (end > total) end = total;
-
-  const pagenation = { total, pageCount, start, end, limit };
-
-  if (page < pageCount) pagenation.nextPage = page + 1;
-  if (page > 1) pagenation.prevPage = page - 1;
-
-  const books = await Book.find({ category: req.params.categoryId });
+  const books = await Book.find({ ...req.query, category: req.params.categoryId }, select)
+    .sort(sort)
+    .skip(pagination.start - 1)
+    .limit(limit);
 
   res.status(200).json({
     success: true,
     count: books.length,
     data: books,
-    pagenation,
+    pagination,
   })
 
 });
