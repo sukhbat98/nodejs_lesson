@@ -75,6 +75,10 @@ BookSchema.post('save', function () {
 });
 
 BookSchema.virtual("zohiogch").get(function () {
+  if (!this.author) {
+    return '';
+  }
+
   let tokens = this.author.split(' ')
   if (tokens.length === 1) tokens = this.author.split('.');
   if (tokens.length === 2) return tokens[1];
