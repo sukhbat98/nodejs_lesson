@@ -2,110 +2,102 @@ const asyncHandler = require('express-async-handler')
 
 // models
 const Category = require("../models/Category");
-const Book = require("../models/Book")
+const Book = require("../models/Book");
+
+const paginate = require("../utils/paginate");
 
 // custom error
 const MyError = require("../utils/myError")
 
-exports.getCategories = asyncHandler(async(req, res, next) => {
+exports.getCategories = asyncHandler(async (req, res, next) => {
 
-    // queries
-    const select = req.query.select;
-    const sort = req.query.sort
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+  // queries
+  const select = req.query.select;
+  const sort = req.query.sort;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
-    ["select", "sort", "page", "limit"].forEach( el => delete req.query[el]);
+  ["select", "sort", "page", "limit"].forEach(el => delete req.query[el]);
 
-    // Pagenation
-    const total = await Category.countDocuments();
-    const pageCount = Math.ceil(total / limit);
-    const start = (page - 1) * limit + 1;
-    let end = start + limit - 1;
+  // Paginate
+  const pagination = await paginate(Category, page, limit);
 
-    if (end > total) end = total;
+  const categories = await Category.find(req.query, select)
+    .sort(sort)
+    .skip(pagination.start - 1)
+    .limit(limit);
 
-    const pagenation = { total, pageCount, start, end, limit };
-
-    if (page < pageCount) pagenation.nextPage = page + 1;
-    if (page > 1) pagenation.prevPage = page - 1;
-
-    const categories = await Category.find(req.query, select)
-        .sort(sort)
-        .skip(start - 1)
-        .limit(limit);
-
-    res.status(200).json({
-        success: true,
-        data: categories,
-        pagenation,
-    })
+  res.status(200).json({
+    success: true,
+    data: categories,
+    pagination,
+  });
 
 });
 
-exports.getCategory = asyncHandler(async(req, res, next) => {
+exports.getCategory = asyncHandler(async (req, res, next) => {
 
-    const categories = await Category.findById(req.params.id).populate("books");
+  const categories = await Category.findById(req.params.id).populate("books");
 
-    if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
-    }
+  if (!categories) {
+    throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
+  }
 
-    res.status(200).json({
-        success: true,
-        data: categories,
-    });
-
-});
-
-exports.createCategory = asyncHandler(async(req, res, next) => {
-
-    const category = await Category.create(req.body)
-    res.status(200).json({
-        success: true,
-        data: category,
-    })
+  res.status(200).json({
+    success: true,
+    data: categories,
+  });
 
 });
 
-exports.updateCategory = asyncHandler(async(req, res, next) => {
+exports.createCategory = asyncHandler(async (req, res, next) => {
 
-    const categories = await Category.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-    });
-
-    if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
-    }
-
-    res.status(200).json({
-        success: true,
-        data: categories,
-    });
+  const category = await Category.create(req.body)
+  res.status(200).json({
+    success: true,
+    data: category,
+  })
 
 });
 
-exports.deleteCategory = asyncHandler(async(req, res, next) => {
+exports.updateCategory = asyncHandler(async (req, res, next) => {
 
-    const categories = await Category.findById(req.params.id);
+  const categories = await Category.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
-    if (!categories) {
-        throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
-    }
+  if (!categories) {
+    throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
+  }
 
-    try {
-        // Delete related child documents
-        await Book.deleteMany({ category: categories._id });
-        await Category.deleteOne({ _id: req.params.id })
-    }
-    catch (err) {
-        throw new MyError(String(err));
-    }
+  res.status(200).json({
+    success: true,
+    data: categories,
+  });
 
-    res.status(200).json({
-        success: true,
-        msg: "Амжилттай устлаа",
-    });
+});
+
+exports.deleteCategory = asyncHandler(async (req, res, next) => {
+
+  const categories = await Category.findById(req.params.id);
+
+  if (!categories) {
+    throw new MyError(req.params.id + " ID-тэй категори байхгүй.", 404);
+  }
+
+  try {
+    // Delete related child documents
+    await Book.deleteMany({ category: categories._id });
+    await Category.deleteOne({ _id: req.params.id })
+  }
+  catch (err) {
+    throw new MyError(String(err));
+  }
+
+  res.status(200).json({
+    success: true,
+    msg: "Амжилттай устлаа",
+  });
 
 });
