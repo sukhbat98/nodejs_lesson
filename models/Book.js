@@ -41,15 +41,26 @@ const BookSchema = new mongoose.Schema({
     default: false,
   },
   available: [String],
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
 
   category: {
     type: mongoose.Schema.ObjectId,
     ref: "Category",
     required: true,
+  },
+
+  createUser: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+
+  updateUser: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+
+  created_at: {
+    type: Date,
+    default: Date.now,
   },
 
 }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
