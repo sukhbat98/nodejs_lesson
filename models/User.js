@@ -40,7 +40,8 @@ UserSchema.pre("save", async function () {
 
 UserSchema.methods.getJsonWebToken = function () {
   const token = jwt.sign({
-    id: this.id
+    id: this.id,
+    role: this.role
   }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRESIN });
 
   return token;
