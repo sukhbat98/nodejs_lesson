@@ -94,7 +94,10 @@ exports.createBook = asyncHandler(async (req, res, next) => {
     throw new MyError(req.body.category + " ID-тэй категори байхгүй.", 404);
   }
 
+  req.body.createUser = req.userId;
+
   const book = await Book.create(req.body)
+
   res.status(200).json({
     success: true,
     data: book,
@@ -103,6 +106,8 @@ exports.createBook = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateBook = asyncHandler(async (req, res, next) => {
+
+  req.body.updateUser = req.userId;
 
   const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

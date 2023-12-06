@@ -24,7 +24,7 @@ router.route("/")
 router.route("/:id")
   .get(getBook)
   .put(protect, authorize("admin", "operator"), updateBook)
-  .delete(protect, authorize("admin", "operator"), deleteBook)
+  .delete(protect, authorize("admin"), deleteBook)
 
 router.route("/:id/photo")
   .put(protect, authorize("admin", "operator"), uploadBookPhoto)
