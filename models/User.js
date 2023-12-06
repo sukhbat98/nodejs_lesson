@@ -44,6 +44,11 @@ UserSchema.methods.getJsonWebToken = function () {
   }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRESIN });
 
   return token;
-}
+};
+
+UserSchema.methods.checkPassword = async function (enteredPassword) {
+  const isMatch = await bcrypt.compare(enteredPassword, this.password);
+  return isMatch;
+};
 
 module.exports = mongoose.model("User", UserSchema);
