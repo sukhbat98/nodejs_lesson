@@ -25,7 +25,6 @@ exports.register = asyncHandler(async (req, res, next) => {
 
 });
 
-
 /** User login */
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body
@@ -50,6 +49,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     token: user.getJsonWebToken(),
+    user,
   })
 
 });

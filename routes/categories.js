@@ -1,5 +1,7 @@
 const express = require("express");
 
+const { protect } = require("../middleware/protect");
+
 // my imports
 const { getCategoryBooks } = require('../controller/books');
 
@@ -18,11 +20,11 @@ router.use("/:categoryId/books", getCategoryBooks);
 
 router.route("/")
   .get(getCategories)
-  .post(createCategory)
+  .post(protect, createCategory)
 
 router.route("/:id")
   .get(getCategory)
-  .put(updateCategory)
-  .delete(deleteCategory)
+  .put(protect, updateCategory)
+  .delete(protect, deleteCategory)
 
 module.exports = router;

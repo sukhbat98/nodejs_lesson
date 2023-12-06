@@ -9,6 +9,11 @@ const errorHandler = (err, req, res, next) => {
     res.statusCode = 400
   }
 
+  if (error.name === "JsonWebTokenError" && error.message === "invalid signature") {
+    error.message = "Буруу токен дамжуулсан байна"
+    res.statusCode = 400
+  }
+
   if (error.code === 11000) {
     error.message = "Талбарын утга давхардаж байна!"
     res.statusCode = 400
